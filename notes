@@ -1,3 +1,41 @@
 Starting with pom file
 we are adding following packages spring boot, spring security, jwt, db, redis, swagger, metrics, and sentry
 
+We’ll keep things simple but professional:
+main → always stable, production-ready
+dev → integration branch
+Feature branches: feature/auth, feature/notes-crud, etc.
+
+
+
+AUTHENTICATION
+goal is to let users sign up, log in, and access APIs securely using JWT
+
+JWT Utility
+-> generates a token when a user login, extract email from token, validates if the token is still valid(not expired)
+
+CustomUserDetailsService
+-> Spring Security needs a way to load user data.We implemented this to fetch user details from our DB using UserRepository.
+Returns a UserDetails object with email, password hash, and authorities (roles).
+
+SecurityConfig
+-> Defines how our API is secured.
+Key rules:
+/api/auth/** → open (signup & login don’t need JWT).
+Everything else → protected, needs JWT.
+Registers our custom JwtFilter so tokens are validated for every request.
+Defines BCryptPasswordEncoder → hashes passwords when registering.
+
+
+JwtFilter
+
+Intercepts every request.
+Looks for Authorization: Bearer <token> header.
+Validates token → extracts email → loads user from DB → tells Spring Security:
+✅ “This request is authenticated as user@example.com
+
+
+Passwords are safe (hashed, not plain text).
+Stateless authentication → server doesn’t keep sessions (scales better).
+Token-based auth → works well for APIs, mobile, frontend apps.
+Spring Security integrated → future features like roles, permissions become easy.
