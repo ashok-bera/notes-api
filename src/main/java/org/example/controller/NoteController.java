@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/notes")
-@Tag(name = "Notes", description = "Operations related to Notes")
+@Tag(name = "Notes", description = "Notes CRUD Apis")
 public class NoteController {
 
     private final NoteService noteService;
