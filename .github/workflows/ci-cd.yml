@@ -30,7 +30,8 @@ jobs:
             ${{ runner.os }}-maven-
 
       - name: Build & Run Tests
-        run: ./mvnw clean verify
+        run: mvn clean verify
+
 
   docker-build:
     runs-on: ubuntu-latest
