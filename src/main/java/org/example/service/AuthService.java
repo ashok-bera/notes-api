@@ -19,11 +19,12 @@ public class AuthService {
         this.encoder = encoder;
     }
 
-    public void register(String email, String password) {
+    public User register(String email, String password) {
         User user = new User();
         user.setEmail(email);
         user.setPasswordHash(encoder.encode(password));
-        userRepo.save(user);
+
+        return userRepo.save(user);
     }
 
     public String login(String email, String password) {

@@ -1,5 +1,7 @@
 package org.example.service;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import lombok.RequiredArgsConstructor;
 import org.example.dto.NoteRequest;
 import org.example.dto.NoteResponse;
 import org.example.model.Note;
@@ -12,15 +14,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class NoteService {
 
     private final NoteRepository noteRepository;
     private final UserRepository userRepository;
-
-    public NoteService(NoteRepository noteRepository, UserRepository userRepository) {
-        this.noteRepository = noteRepository;
-        this.userRepository = userRepository;
-    }
+    private final MeterRegistry meterRegistry;
 
     public List<NoteResponse> getUserNotes(String email) {
         User user = userRepository.findByEmail(email).orElseThrow();
@@ -37,6 +36,9 @@ public class NoteService {
         note.setTitle(request.getTitle());
         note.setContent(request.getContent());
         Note saved = noteRepository.save(note);
+
+        // aading custom metrics
+        meterRegistry.counter("notes_created_total", "user", email).increment();
         return new NoteResponse(saved.getId(), saved.getTitle(), saved.getContent(), saved.getCreatedAt(), saved.getUpdatedAt());
     }
 

@@ -1,15 +1,17 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/notesdb
-    username: notes_user
-    password: notes_pass
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/notesdb
+    username: ${DB_USER:notes_user}
+    password: ${DB_PASS:notes_pass}
   jpa:
     hibernate:
       ddl-auto: validate
     show-sql: true
+
   redis:
-    host: localhost
-    port: 6379
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
+    password: ${REDIS_PASS:}
 
 flyway:
   enabled: true
@@ -20,7 +22,6 @@ logging:
     root: INFO
     org.springframework: INFO
 
-
 management:
   endpoints:
     web:
@@ -29,9 +30,11 @@ management:
   endpoint:
     health:
       show-details: always
+    prometheus:
+      enabled: true
   security:
     enabled: false
 
 sentry:
-  dsn: ${SENTRY_DSN:}  # configure later
+  dsn: ${SENTRY_DSN:}  # Secret from env var
   traces-sample-rate: 1.0
