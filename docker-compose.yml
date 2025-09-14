@@ -1,6 +1,25 @@
 version: "3.9"
 
 services:
+  notes-api:
+    build: .
+    container_name: notes-api
+    ports:
+      - "8080:8080"
+    networks:
+      - monitoring
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:postgresql://notes-db:5432/notesdb
+      SPRING_DATASOURCE_USERNAME: notes_user
+      SPRING_DATASOURCE_PASSWORD: notes_pass
+      SPRING_REDIS_HOST: notes-redis
+      SPRING_REDIS_PORT: 6379
+    depends_on:
+      - db
+      - redis
+
+
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
@@ -20,6 +39,26 @@ services:
       - ./grafana/provisioning:/etc/grafana/provisioning
     ports:
       - "3000:3000"
+    networks:
+      - monitoring
+
+  db:
+    image: postgres:15
+    container_name: notes-db
+    environment:
+      POSTGRES_DB: notesdb
+      POSTGRES_USER: notes_user
+      POSTGRES_PASSWORD: notes_pass
+    ports:
+      - "5432:5432"
+    networks:
+      - monitoring
+
+  redis:
+    image: redis:7
+    container_name: notes-redis
+    ports:
+      - "6379:6379"
     networks:
       - monitoring
 
